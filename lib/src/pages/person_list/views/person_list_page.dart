@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taav_bootstrap/taav_bootstrap.dart';
@@ -7,23 +5,16 @@ import 'package:taav_ui/taav_ui.dart';
 
 import '../../shared/models/person_view_model.dart';
 import '../controllers/person_list_controller.dart';
+import 'widgets/person_list_item.dart';
 
 class PersonListPage extends GetView<PersonListController> {
   const PersonListPage({super.key});
 
   @override
   Widget build(BuildContext context) => TaavScaffold(
-        appBar: AppBar(
-          title: const TaavText.heading5('Person List'),
-          backgroundColor: Colors.teal,
-        ),
-        floatingActionButton: TaavIconButton(
-          onTap: controller.onAddButtonTap,
-          icon: FontAwesomeIcons.plus,
-        ),
-        body: Obx(
-          () => _body(context),
-        ),
+        appBar: _appBar(),
+        floatingActionButton: _floatingActionButton(),
+        body: Obx(() => _body(context)),
       );
 
   Widget _body(BuildContext context) => Breakpoint.either(
@@ -36,51 +27,35 @@ class PersonListPage extends GetView<PersonListController> {
   Widget smallSize() => TaavListView<PersonViewModel>(
         key: controller.listKey,
         items: controller.personList,
-        itemBuilder: (context, item, index) => _items(item, index),
-        onRefreshData: _onRefreshData,
+        itemBuilder: _itemBuilder,
+        onRefreshData: controller.updateList,
         showError: controller.showError.value,
-        emptyText: 'it\'s empty',
+        emptyText: 'No item found.',
       );
-
-  Padding _items(PersonViewModel item, int index) => Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          TaavFilePreview.memory(
-            base64Decode(item.image),
-            fileExtension: 'jpg',
-            showOptionsMenu: false,
-            showImageRetry: false,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TaavText.heading5(item.name),
-              TaavText.body1(item.nationalId),
-            ],
-          ),
-          TaavButton.outline(
-            onTap: () => controller.onEditPressed(item, index),
-            label: 'Edit',
-          ),
-          const TaavDivider(),
-        ],
-      ),
-    );
 
   Widget largeSize() => TaavGridView<PersonViewModel>(
         key: controller.gridKey,
         items: controller.personList,
-        itemBuilder: (context, item, index) => _items(item, index),
+        itemBuilder: _itemBuilder,
         crossAxisItemSize: 300,
         crossAxisCount: const CrossAxisCount(xs: 2, lg: 4),
-        onRefreshData: _onRefreshData,
+        onRefreshData: controller.updateList,
         showError: controller.showError.value,
-        emptyText: 'it\'s empty',
+        emptyText: 'No item found.',
       );
 
-  Future<void> _onRefreshData() async{
-    await controller.updateList();
-  }
+  Widget _itemBuilder(_, PersonViewModel item, int index) => PersonListItem(
+        item: item,
+        onSubmit: () => controller.onEditPressed(item: item, index: index),
+      );
+
+  Widget _floatingActionButton() => TaavIconButton(
+        onTap: controller.onAddButtonTap,
+        icon: FontAwesomeIcons.plus,
+      );
+
+  AppBar _appBar() => AppBar(
+        title: const TaavText.heading5('Person List'),
+        backgroundColor: Colors.teal,
+      );
 }

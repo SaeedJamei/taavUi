@@ -1,4 +1,4 @@
-import 'state_view_model.dart';
+import '../../../../shared/models/state_view_model.dart';
 
 class StateListViewModel {
   StateListViewModel({

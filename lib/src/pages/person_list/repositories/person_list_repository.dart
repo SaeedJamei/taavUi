@@ -20,3 +20,7 @@ class PersonListRepository {
     );
   }
 }
+
+class BaseUrls {
+  static const String jsonServer = '';
+}

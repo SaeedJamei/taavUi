@@ -20,11 +20,11 @@ class PersonListController extends GetxController {
   }
 
   Future<void> onAddButtonTap() async {
-    final result = await Get.toNamed<PersonViewModel>(
-      '${RouteNames.viewPage}${RouteNames.insertPerson}',
+    final result = await Get.toNamed<dynamic>(
+      '${RouteNames.personList}${RouteNames.insertPerson}',
     );
 
-    if (result == null) {
+    if (result is! PersonViewModel) {
       return;
     }
 
@@ -51,15 +51,17 @@ class PersonListController extends GetxController {
     );
   }
 
-  Future<void> onEditPressed(PersonViewModel item, int index) async {
+  Future<void> onEditPressed({
+    required PersonViewModel item,
+    required int index,
+  }) async {
     const TaavRoute route = TaavRoute(
-      '${RouteNames.viewPage}${RouteNames.updatePerson}',
+      '${RouteNames.personList}${RouteNames.updatePerson}',
     );
 
-    final result =
-        await route.toName<PersonViewModel>(parameters: {'id': item.id});
+    final result = await route.toName<dynamic>(parameters: {'id': item.id});
 
-    if (result == null) {
+    if (result is! PersonViewModel) {
       return;
     }
 
